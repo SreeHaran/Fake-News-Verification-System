@@ -1,5 +1,6 @@
 from googlesearch import search
 from newspaper import Article
+from sklearn.feature_extraction.text import TfidfVectorizer
 import nltk
 nltk.download('punkt')
 
@@ -14,16 +15,19 @@ for url in search(query, num=1, tbs="qdr:d", stop= 1, pause=3):
 	toi_article.parse()
 	toi_article.nlp()
 	
+	summary = toi_article.summary
+	corpus = [summary, query]
+	vect = TfidfVectorizer(min_df=1, stop_words="english")
+	tfidf = vect.fit_transform(corpus)
+	pairwise_similarity = tfidf * tfidf.T
+	a = pairwise_similarity.toarray()
 	
-	print("Article's Title:")
-	print(toi_article.title)
-	print("\n")
+	title = toi_article.title
+	corpus = [title, query]
+	vect = TfidfVectorizer(min_df=1, stop_words="english")
+	tfidf = vect.fit_transform(corpus)
+	pairwise_similarity = tfidf * tfidf.T
+	b = pairwise_similarity.toarray()
 	
-	
-	print("Article's Summary:")
-	print(toi_article.summary)
-	print("\n")
-
-
-	print("Article's Keywords:")
-	print(toi_article.keywords)
+	print("Title Similarity: ", a[0][1])
+	print("Summary Similarity: ", b[0][1])
