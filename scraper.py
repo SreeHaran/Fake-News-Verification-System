@@ -6,7 +6,11 @@ nltk.download('punkt')
 
 query = "omicron cases rises in india"
  
-for url in search(query, num=1, tbs="qdr:d", stop= 1, pause=3): 
+max_a=0.
+max_b=0.
+link='none'
+
+for url in search(query, num=15, tbs="qdr:w", stop= 15, pause=3): 
 #tbs (str) – Time limits (i.e “qdr:h” => last hour, “qdr:d” => last 24 hours, “qdr:m” => last month)
 	print(url)
 	
@@ -33,5 +37,19 @@ for url in search(query, num=1, tbs="qdr:d", stop= 1, pause=3):
 	pairwise_similarity = tfidf * tfidf.T
 	b = pairwise_similarity.toarray()
 	
-	print("Title Similarity: ", a[0][1])
-	print("Summary Similarity: ", b[0][1])
+	max_num = max(max_a,max_b)
+	if (a[0][1]>max_num) or (b[0][1]>max_num):
+		max_a=a[0][1]
+		max_b=b[0][1]
+		link=url
+
+res=int(round(max(max_a,max_b),2)*100)
+if res>70:
+	print(f"Most Relevant News: {link}")
+	print(f"Genuinity: {res}%")
+elif res>20:
+	print(f"Most Relevant News: {link}")
+	print(f"Genuinity: {res+30}%")
+else:
+	print(f"It Might be a Fake News")
+	print(f"Genuinity: {res+5}%")
